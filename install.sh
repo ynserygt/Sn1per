@@ -457,3 +457,57 @@ rm -Rf /tmp/arachni* /tmp/gobuster* /tmp/msfinstall /tmp/openssl.cnf 2> /dev/nul
 
 echo -e "$OKRED[>]$RESET Done! $RESET"
 echo -e "$OKRED[>]$RESET To run, type 'sniper'! $RESET"
+
+echo -e "$OKBLUE[*]$RESET Installing Sn1per with Cloudflare bypass capabilities..."
+
+# Install required packages
+apt-get update
+apt-get install -y git python3 python3-pip nmap wafw00f nikto dirsearch whatweb sslscan sslyze jq
+
+# Install Go tools
+if ! command -v go &> /dev/null; then
+    echo -e "$OKBLUE[*]$RESET Installing Go..."
+    wget https://golang.org/dl/go1.17.linux-amd64.tar.gz
+    tar -C /usr/local -xzf go1.17.linux-amd64.tar.gz
+    rm go1.17.linux-amd64.tar.gz
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
+    source /root/.bashrc
+fi
+
+# Install Go-based tools
+echo -e "$OKBLUE[*]$RESET Installing Go-based tools..."
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install -v github.com/ffuf/ffuf@latest
+go install -v github.com/OJ/gobuster/v3@latest
+go install -v github.com/xmendez/wfuzz@latest
+
+# Install Python-based tools
+echo -e "$OKBLUE[*]$RESET Installing Python-based tools..."
+pip3 install amass
+pip3 install wafw00f
+pip3 install dirsearch
+pip3 install whatweb
+pip3 install sslscan
+pip3 install sslyze
+
+# Copy tools to /usr/local/bin
+cp $GOPATH/bin/* /usr/local/bin/
+cp $HOME/.local/bin/* /usr/local/bin/
+
+# Create necessary directories
+mkdir -p /usr/share/sniper/loot
+mkdir -p /usr/share/sniper/modes
+mkdir -p /usr/share/sniper/wordlists
+
+# Copy files
+cp -R * /usr/share/sniper/
+chmod +x /usr/share/sniper/sniper
+chmod +x /usr/share/sniper/modes/*
+
+# Create symlink
+ln -sf /usr/share/sniper/sniper /usr/local/bin/sniper
+
+echo -e "$OKGREEN[+]$RESET Installation completed successfully!"
+echo -e "$OKBLUE[*]$RESET You can now use Sn1per with Cloudflare bypass capabilities"
+echo -e "$OKBLUE[*]$RESET Example usage: sniper -t example.com -m normal"

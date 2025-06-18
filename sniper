@@ -1,7 +1,7 @@
 #!/bin/bash
 # + -- --=[Sn1per Community Edition by @xer0dayz
 # + -- --=[https://sn1persecurity.com
-# 
+# Updated for Cloudflare compatibility
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root"
@@ -12,6 +12,9 @@ VER="9.2"
 INSTALL_DIR="/usr/share/sniper"
 LOOT_DIR="$INSTALL_DIR/loot/$TARGET"
 SNIPER_PRO=$INSTALL_DIR/pro.sh
+
+# Load Cloudflare bypass module
+source $INSTALL_DIR/modes/cloudflare.sh
 
 # INIT POSTGRESQL
 service postgresql start 2> /dev/null
